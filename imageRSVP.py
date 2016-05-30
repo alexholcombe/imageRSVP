@@ -629,7 +629,7 @@ print(phasesMsg); logging.info(phasesMsg)
 #myWin= openMyStimWindow();    myWin.flip(); myWin.flip();myWin.flip();myWin.flip()
 nDoneMain =0
 
-placeholder = visual.TextStim(myWin, text='When you are ready,\nClick the mouse to start the experiment')
+placeholder = visual.TextStim(myWin, text='When you are ready,\nclick the mouse to start the experiment', alignHoriz='center')
 
 while nDoneMain < trials.nTotal and expStop==False:
     if nDoneMain==0:
