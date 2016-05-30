@@ -26,7 +26,7 @@ tasks=['T1','T1T2','T2']; task = tasks[2]
 #same screen or external screen? Set scrn=0 if one screen. scrn=1 means display stimulus on second screen.
 #widthPix, heightPix
 quitFinder = False #if checkRefreshEtc, quitFinder becomes True
-autopilot=True
+autopilot=False
 demo=False #False
 exportImages= False #quits after one trial
 subject='Hubert' #user is prompted to enter true subject name
@@ -451,13 +451,15 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
        if folder == 'calmFiller':
             if calmFillerUsage[imageNum-1]==2:
                 newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and calmFillerUsage[i-1]<2])
-                imageNumList[imageNumList.index(imageNum)] = newImageNum
+                #imageNumList[imageNumList.index(imageNum)] = newImageNum
+                imageNumList[np.where(imageNumList==imageNum)] = newImageNum
                 imageNum = newImageNum
             calmFillerUsage[imageNum-1] += 1
        elif folder == 'arousFiller':
        	    if arousFillerUsage[imageNum-1]==2:
                 newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and arousFillerUsage[i-1]<2])
-                imageNumList[imageNumList.index(imageNum)] = newImageNum
+                #imageNumList[imageNumList.index(imageNum)] = newImageNum
+                imageNumList[np.where(imageNumList==imageNum)] = newImageNum
                 imageNum = newImageNum
             arousFillerUsage[imageNum-1] += 1
        imageFilename = os.path.join("images",folder)
