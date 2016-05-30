@@ -1,3 +1,4 @@
+
 #Alex Holcombe alex.holcombe@sydney.edu.au
 #See the README.md for more information: https://github.com/alexholcombe/attentional-blink/blob/master/README.md
 #git remote add origin https://github.com/alexholcombe/attentional-blink.git
@@ -338,7 +339,7 @@ def  oneFrameOfStim( n,cue1pos,cue2lag,cue,imageSequence,cueDurFrames,imageDurFr
                                        fillerAndLineupImages, targetImage,  critDistImage): 
 #defining a function to draw each frame of stim. So can call second time for tracking task response phase
   SOAframes = imageDurFrames+ISIframes
-  cueFrames = cuesPos*SOAframes  #cuesPos is global variable
+  cueFrames = cuesPos*SOAframes  #cuesPos is  variable
   imageN = int( np.floor(n/SOAframes) )
   if imageN >   numImagesInStream:
     print('ERROR asking for ',imageN, ' but only ',numImagesInStream,' desired in stream')
@@ -396,6 +397,17 @@ cue = visual.Rect(myWin,
 #predraw all images needed for this trial
 imageHeight = 240; imageWidth = 320
 
+
+#populated with 0s when the drawImages... function is called the first time. 
+#Represents the number of times an image has been used. Position in the list represents image identity, which is numeric
+calmCritDistUsage = np.array()
+calmTargetUsage = np.array()
+calmFillerUsage = np.array()
+arousCritDistUsage = np.array()
+arousTargetUsage = np.array()
+arousFillerUsage = np.array()
+
+
 def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     fillerAndLineupImages = list();     fillerAndLineupImageNames = list()
     #6 folders
@@ -408,6 +420,15 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     nImagesInFolder = 48
     nImagesInFolderFillers = 150
     
+    #first time this is called, set up lists of 0s
+    if len(calmCritDistUsage) == 0 : calmCritDistUsage = np.array([0 for k in range(nImagesInFolderFillers)])
+    if len(calmCritTargetUsage) == 0 : calmCritTargetUsage = np.array([0 for k in range(nImagesInFolder)])
+    if len(calmCritFillerUsage) == 0 : calmCritDistUsage = np.array([0 for k in range(nImagesInFolder)])
+
+    if len(arousCritDistUsage) == 0 : arousCritDistUsage = np.array([0 for k in range(nImagesInFolderFillers)])
+    if len(arousCritTargetUsage) == 0 : arousCritTargetUsage = np.array([0 for k in range(nImagesInFolder)])
+    if len(arousCritFillerUsage) == 0 : arousCritDistUsage = np.array([0 for k in range(nImagesInFolder)])
+
     #draw the filler items. also the lineup items, as they are from same folder as the filler items
     arousFolderIdx = thisTrial['otherItemsArousing']
     folderIdx = 2
@@ -420,6 +441,20 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     np.random.shuffle(imageNumList)
     imageNumList = imageNumList[0:numImages]
     for imageNum in imageNumList: #plus numRespOptions because need additional ones for the lineup
+       if folder == 'calmFiller':
+            if calmFillerUsage[imageNum-1]==2:
+                print('calmfiller error')
+                newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers) if i not in imageNumList and calmFillerUsage[i-1]<2])
+                imageNumList[imageNumList.index(imageNum)] = newImageNum
+                imageNum = newImageNum
+            calmFillerUsage[imageNum-1] += 1
+       elif folder == 'arousFiller':
+       	    if arousFillerUsage[imageNum-1]==2:
+                print('arousfiller error')
+                newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers) if i not in imageNumList and arousFillerUsage[i-1]<2])
+                imageNumList[imageNumList.index(imageNum)] = newImageNum
+                imageNum = newImageNum
+            arousFillerUsage[imageNum-1] += 1
        imageFilename = os.path.join("images",folder)
        print("imageFilename path=",imageFilename)
        imageFilename +=  '/'  + str( imageNum ) + '.jpg'
@@ -430,7 +465,10 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     #draw the target, same arousal as the other items
     folderIdx = 1 #target
     folder = folders[arousFolderIdx][folderIdx]
-    targetImageWhich = random.randint(1,nImagesInFolder)
+    if folder == 'calmTarget':
+    	targetImageWhich = np.random.choice(np.arrange(1,nImagesInFolder)[calmTargetUsage<2])
+    elif folder == 'arousTarget':
+    	targetImageWhich = np.random.choice(np.arrange(1,nImagesInFolder)[arousTargetUsage<2])
     targetFilename = os.path.join("images",folder) + '/'  + str( targetImageWhich ) + '.jpg'
     print(targetImageWhich,'\t', end='', file=dataFile) #print target name to datafile
 
@@ -497,7 +535,7 @@ nTrialsCorrectT2eachLag = np.zeros(len(possibleCue2lags)); nTrialsEachLag = np.z
 nTrialsApproxCorrectT2eachLag = np.zeros(len(possibleCue2lags));
 
 def do_RSVP_stim(fillerAndLineupImages,imageSequence, targetImage,critDistImage,cue1pos, cue2lag, proportnNoise,trialN):
-    #relies on global variables:
+    #relies on  variables:
     #   logging, bgColor
     #
     cuesPos = [] #will contain the positions of all the cues (targets)
