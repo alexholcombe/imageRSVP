@@ -425,13 +425,13 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     global calmTargetUsage
     print(calmTargetUsage)
     global calmFillerUsage
-    print(calmFillerUsage)
+    #print(calmFillerUsage)
     global arousCritDistUsage
     print(arousCritDistUsage)
     global arousTargetUsage
     print(arousTargetUsage)
     global arousFillerUsage
-    print(arousFillerUsage)
+    #print(arousFillerUsage)
     
     #first time this is called, set up lists of 0s
     if len(calmCritDistUsage) == 0 : calmCritDistUsage = np.array([0 for k in range(nImagesInFolder)])
@@ -455,23 +455,23 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     imageNumList = imageNumList[0:numImages]
     for imageNum in imageNumList: #plus numRespOptions because need additional ones for the lineup
        if folder == 'calmFiller':
-            if calmFillerUsage[imageNum-1]==2:
-                newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and calmFillerUsage[i-1]<2])
-                #imageNumList[imageNumList.index(imageNum)] = newImageNum
-                imageNumList[np.where(imageNumList==imageNum)] = newImageNum
-                imageNum = newImageNum
+            # if calmFillerUsage[imageNum-1]==2:
+            #     newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and calmFillerUsage[i-1]<2])
+            #     #imageNumList[imageNumList.index(imageNum)] = newImageNum
+            #     imageNumList[np.where(imageNumList==imageNum)] = newImageNum
+            #     imageNum = newImageNum
             calmFillerUsage[imageNum-1] += 1
        elif folder == 'arousFiller':
-       	    if arousFillerUsage[imageNum-1]==2:
-                newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and arousFillerUsage[i-1]<2])
-                #imageNumList[imageNumList.index(imageNum)] = newImageNum
-                imageNumList[np.where(imageNumList==imageNum)] = newImageNum
-                imageNum = newImageNum
+       	    # if arousFillerUsage[imageNum-1]==2:
+            #     newImageNum = np.random.choice([i for i in np.arange(1,nImagesInFolderFillers+1) if i not in imageNumList and arousFillerUsage[i-1]<2])
+            #     #imageNumList[imageNumList.index(imageNum)] = newImageNum
+            #     imageNumList[np.where(imageNumList==imageNum)] = newImageNum
+            #     imageNum = newImageNum
             arousFillerUsage[imageNum-1] += 1
        imageFilename = os.path.join("images",folder)
-       print("imageFilename path=",imageFilename)
+       #print("imageFilename path=",imageFilename)
        imageFilename +=  '/'  + str( imageNum ) + '.jpg'
-       print('loading image ',imageFilename)
+       #print('loading image ',imageFilename)
        image = visual.ImageStim(myWin, image=imageFilename, pos=(0,0), size=imageSz, units='pix',autoLog=autoLogging)
        fillerAndLineupImages.append(image)
        fillerAndLineupImageNames.append(imageNum)
@@ -480,10 +480,10 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     folder = folders[arousFolderIdx][folderIdx]
     if folder == 'calmTarget':
         targetImageWhich = np.random.choice(np.arange(1,nImagesInFolder+1)[calmTargetUsage<2])
-        calmTargetUsage[np.where(calmTargetUsage==targetImageWhich)] += 1
+        calmTargetUsage[targetImageWhich-1] += 1
     elif folder == 'arousTarget':
     	targetImageWhich = np.random.choice(np.arange(1,nImagesInFolder+1)[arousTargetUsage<2])
-        arousTargetUsage[np.where(arousTargetUsage==targetImageWhich)] += 1
+        arousTargetUsage[targetImageWhich-1] += 1
     targetFilename = os.path.join("images",folder) + '/'  + str( targetImageWhich ) + '.jpg'
     print(targetImageWhich,'\t', end='', file=dataFile) #print target name to datafile
 
@@ -496,10 +496,10 @@ def drawImagesNeededForThisTrial(numImagesInStream,numRespOptions,thisTrial):
     folder = folders[arousFolderIdx][folderIdx]
     if folder == 'calmCritDist':
         whichImage = np.random.choice(np.arange(1,nImagesInFolder+1)[calmCritDistUsage<2])
-        calmCritDistUsage[np.where(calmCritDistUsage==targetImageWhich)] += 1
+        calmCritDistUsage[whichImage-1] += 1
     elif folder == 'arousCritDist':
         whichImage = np.random.choice(np.arange(1,nImagesInFolder+1)[arousCritDistUsage<2])
-        arousCritDistUsage[np.where(arousCritDistUsage==targetImageWhich)] += 1
+        arousCritDistUsage[whichImage-1] += 1
     imageFilename = os.path.join("images",folder) + '/'  + str(whichImage) + '.jpg'
     print(whichImage,'\t', end='', file=dataFile) #print crit distractor to datafile
 
